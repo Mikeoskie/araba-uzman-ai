@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
-import { auth } from '~/plugins/firebase'
 import { 
+  type Auth,
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut as firebaseSignOut,
@@ -10,8 +10,12 @@ import {
 
 const user = ref<User | null>(null)
 const isAuthenticated = computed(() => user.value !== null)
+const isAuthInitialized = ref(false)
 
 export const useAuth = () => {
+  const { $auth } = useNuxtApp()
+  const auth = $auth as Auth
+
   const register = async (email: string, password: string) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -45,14 +49,20 @@ export const useAuth = () => {
   }
 
   const initAuth = () => {
-    onAuthStateChanged(auth, (currentUser) => {
-      user.value = currentUser
+    return new Promise<void>((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        user.value = currentUser
+        isAuthInitialized.value = true
+        unsubscribe()
+        resolve()
+      })
     })
   }
 
   return {
     user,
     isAuthenticated,
+    isAuthInitialized,
     register,
     login,
     signOut,
