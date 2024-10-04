@@ -72,7 +72,7 @@ const handleSubmit = async () => {
     }
     router.push('/')
   } catch (error) {
-    errorMessage.value = error.message
+    errorMessage.value = 'Kullanıcı Adı veya Şifre Hatalı.'
   }
 }
 
