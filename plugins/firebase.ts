@@ -12,9 +12,6 @@ export default defineNuxtPlugin(() => {
     messagingSenderId: config.public.firebaseConfig.messagingSenderId,
     appId: config.public.firebaseConfig.appId
   }
-
-  console.log('Firebase config:', firebaseConfig) 
-
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
