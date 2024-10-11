@@ -58,7 +58,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '~/composables/useAuth'
@@ -80,7 +80,7 @@ const handleSubmit = async () => {
       await login(email.value, password.value)
     }
     router.push('/')
-  } catch (error: any) {
+  } catch (error) {
     errorMessage.value = error.message
   }
 }
