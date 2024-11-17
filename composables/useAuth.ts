@@ -1,71 +1,71 @@
 import { ref, computed } from 'vue'
-import { 
-  type Auth,
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  type User
-} from 'firebase/auth'
+import { type Auth, type User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 const user = ref<User | null>(null)
 const isAuthenticated = computed(() => user.value !== null)
-const isAuthInitialized = ref(false)
 
 export const useAuth = () => {
   const { $auth } = useNuxtApp()
   const auth = $auth as Auth
-
-  const register = async (email: string, password: string) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      user.value = userCredential.user
-      return user.value
-    } catch (error: any) {
-      console.error('Registration error:', error.message)
-      throw error
-    }
-  }
 
   const login = async (email: string, password: string) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       user.value = userCredential.user
       return user.value
-    } catch (error: any) {
-      console.error('Login error:', error.message)
+    } catch (error) {
+      console.error('Login error:', error)
       throw error
     }
   }
 
-  const signOut = async () => {
+  const loginWithGoogle = async () => {
     try {
-      await firebaseSignOut(auth)
-      user.value = null
-    } catch (error: any) {
-      console.error('Sign out error:', error.message)
+      const provider = new GoogleAuthProvider()
+      const userCredential = await signInWithPopup(auth, provider)
+      user.value = userCredential.user
+      return user.value
+    } catch (error) {
+      console.error('Google login error:', error)
       throw error
     }
   }
 
-  const initAuth = () => {
-    return new Promise<void>((resolve) => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        user.value = currentUser
-        isAuthInitialized.value = true
-        unsubscribe()
-        resolve()
-      })
-    })
+  const register = async (email: string, password: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      user.value = userCredential.user
+      return user.value
+    } catch (error) {
+      console.error('Register error:', error)
+      throw error
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await signOut(auth)
+      user.value = null
+    } catch (error) {
+      console.error('Logout error:', error)
+      throw error
+    }
+  }
+
+  const getIdToken = async () => {
+    if (user.value) {
+      return await user.value.getIdToken()
+    }
+    throw new Error('User is not authenticated')
   }
 
   return {
     user,
     isAuthenticated,
-    isAuthInitialized,
-    register,
     login,
-    signOut,
-    initAuth
+    loginWithGoogle,
+    register,
+    logout,
+    getIdToken
   }
 }

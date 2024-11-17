@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
@@ -15,9 +15,23 @@ export default defineNuxtPlugin(() => {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
+  // Kullanıcı UID'sini dinleme fonksiyonu
+  const getUserUID = () => {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          resolve(user.uid) // Kullanıcı giriş yaptıysa UID'yi döndür
+        } else {
+          reject('Kullanıcı giriş yapmamış.') // Giriş yapılmamışsa hata döndür
+        }
+      })
+    })
+  }
+
   return {
     provide: {
-      auth: auth
+      auth: auth,
+      getUserUID: getUserUID // getUserUID fonksiyonunu sağlayın
     }
   }
 })

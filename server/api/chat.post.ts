@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 type ChatMessage = {
   role: 'system' | 'user' | 'assistant';
@@ -19,8 +20,19 @@ const userDataStore = new Map<string, UserData>()
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const body = await readBody(event)
-
-  const userId = body.userId || 'default'
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user)=> {
+    if (user) {
+    // Kullanıcı giriş yaptıysa UID'yi alabilirsiniz
+    const uid = user.uid;
+    console.log("Kullanıcı UID:", uid);
+  } else {
+    // Kullanıcı çıkış yaptıysa veya giriş yapmamışsa
+    console.log("Kullanıcı giriş yapmamış.");
+  }
+  })
+  const userId = body.userId
+  console.log(body,'userID')
 
   const openai = new OpenAI({
     apiKey: config.openaiApiKey,

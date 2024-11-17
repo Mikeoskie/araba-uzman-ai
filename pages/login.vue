@@ -1,138 +1,82 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-md">
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        {{ isRegister ? 'Kayıt Ol' : 'Giriş Yap' }}
-      </h2>
-      <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Sign in to your account
+        </h2>
+      </div>
+      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+        <input type="hidden" name="remember" value="true" />
+        <!-- <div class="rounded-md shadow-sm -space-y-px">
+          <div>
+            <label for="email-address" class="sr-only">Email address</label>
+            <input id="email-address" name="email" type="email" autocomplete="email" required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Email address" v-model="email" />
+          </div>
+          <div>
+            <label for="password" class="sr-only">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Password" v-model="password" />
+          </div>
+        </div> -->
+<!-- 
         <div>
-          <label for="email" class="sr-only">E-posta adresi</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            v-model="email"
-            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-            placeholder="E-posta adresi"
-          />
-        </div>
-        <div class="relative">
-          <label for="password" class="sr-only">Şifre</label>
-          <input
-            id="password"
-            name="password"
-            :type="showPassword ? 'text' : 'password'"
-            required
-            v-model="password"
-            class="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-            placeholder="Şifre"
-          />
-          <button
-            type="button"
-            @click="togglePasswordVisibility"
-            class="password-toggle"
-          >
-            <span v-if="showPassword" class="text-gray-600">👁️</span>
-            <span v-else class="text-gray-600">👁️‍🗨️</span>
+          <button type="submit"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Sign in
           </button>
-        </div>
-        <div>
-          <button
-            type="submit"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            {{ isRegister ? 'Kayıt Ol' : 'Giriş Yap' }}
-          </button>
-        </div>
+        </div> -->
       </form>
-      <div class="text-center">
-        <button @click="toggleRegister" class="text-blue-600 hover:text-blue-800">
-          {{ isRegister ? 'Zaten hesabınız var mı? Giriş yapın' : 'Hesabınız yok mu? Kayıt olun' }}
+      <div>
+        <button @click="handleGoogleLogin"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-gray-500 group-hover:text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+            </svg>
+          </span>
+          Sign in with Google
         </button>
       </div>
-      <p v-if="errorMessage" class="mt-2 text-center text-sm text-red-600">
-        {{ errorMessage }}
+      <p v-if="error" class="mt-2 text-center text-sm text-red-600">
+        {{ error }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { useAuth } from '~/composables/useAuth'
-
-const router = useRouter()
-const { login, register, isAuthenticated } = useAuth()
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
-const isRegister = ref(false)
-const errorMessage = ref('')
-const showPassword = ref(false)
+const error = ref('')
+const { login, loginWithGoogle } = useAuth()
+const router = useRouter()
 
-const handleSubmit = async () => {
+const handleLogin = async () => {
   try {
-    if (isRegister.value) {
-      await register(email.value, password.value)
-    } else {
-      await login(email.value, password.value)
-    }
+    const user = await login(email.value, password.value)
+    console.log('Logged in user:', user)
     router.push('/')
-  } catch (error) {
-    errorMessage.value = error.message
+  } catch (e) {
+    error.value = e.message
   }
 }
 
-const toggleRegister = () => {
-  isRegister.value = !isRegister.value
-  errorMessage.value = ''
-}
-
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value
-}
-
-onMounted(() => {
-  if (isAuthenticated.value) {
+const handleGoogleLogin = async () => {
+  try {
+    const user = await loginWithGoogle()
+    console.log('Logged in with Google:', user)
     router.push('/')
+  } catch (e) {
+    error.value = e.message
   }
-})
+}
 </script>
-
-<style scoped>
-.relative {
-  position: relative;
-}
-
-input[type="password"],
-input[type="text"] {
-  padding-right: 2.5rem;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-}
-
-.password-toggle:focus {
-  outline: none;
-}
-
-.password-toggle span {
-  font-size: 1.2rem;
-}
-</style>
