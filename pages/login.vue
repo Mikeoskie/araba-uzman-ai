@@ -30,22 +30,9 @@ import { ref } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import { useRouter } from 'vue-router'
 
-const email = ref('')
-const password = ref('')
 const error = ref('')
-const { login, loginWithGoogle } = useAuth()
+const { loginWithGoogle } = useAuth()
 const router = useRouter()
-
-const handleLogin = async () => {
-  try {
-    const user = await login(email.value, password.value)
-    console.log('Logged in user:', user)
-    router.push('/')
-  } catch (e) {
-    error.value = e.message
-  }
-}
-
 const handleGoogleLogin = async () => {
   try {
     const user = await loginWithGoogle()

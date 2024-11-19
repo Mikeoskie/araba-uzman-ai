@@ -3,7 +3,7 @@
     <header class="bg-blue-600 shadow">
       <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <h1 class="text-3xl font-bold text-white" @click="refreshPage">Araba Uzmanı AI</h1>
-        <button v-if="isAuthenticated" @click="handleSignOut" class="text-white hover:text-gray-200">Çıkış Yap</button>
+        <button v-if="isAuthenticated" @click="handleLogout" class="text-white hover:text-gray-200">Çıkış Yap</button>
       </div>
     </header>
 
@@ -61,15 +61,15 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '~/composables/useAuth'
 
 const router = useRouter()
-const { user, isAuthenticated, signOut, initAuth } = useAuth()
+const { user, isAuthenticated, signOut, checkAuth, getIdToken } = useAuth()
 
 const messages = ref([])
 const userInput = ref('')
 const chatContainer = ref(null)
 const isLoading = ref(false)
 
-onMounted(() => {
-  initAuth()
+onMounted(async () => {
+  await checkAuth()
 })
 
 watch(isAuthenticated, (newValue) => {
@@ -78,9 +78,12 @@ watch(isAuthenticated, (newValue) => {
   }
 })
 
-const handleSignOut = async () => {
-  await signOut()
-  router.push('/login')
+const handleLogout = async () => {
+  try {
+    await signOut()
+  } catch (error) {
+    console.error('Çıkış yapma hatası:', error)
+  }
 }
 
 const refreshPage = () => {
@@ -97,11 +100,12 @@ const sendMessage = async () => {
   messages.value.push({ text: userMessage, isUser: true })
 
   try {
-    // API çağrısı burada yapılacak
+    const idToken = await getIdToken()
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
       },
       body: JSON.stringify({ message: userMessage }),
     })

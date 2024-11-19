@@ -1,23 +1,15 @@
 import { ref, computed } from 'vue'
-import { type Auth, type User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { type Auth, type User, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth'
 
 const user = ref<User | null>(null)
 const isAuthenticated = computed(() => user.value !== null)
+const loading = ref(true)
 
 export const useAuth = () => {
   const { $auth } = useNuxtApp()
+  const router = useRouter()
   const auth = $auth as Auth
 
-  const login = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      user.value = userCredential.user
-      return user.value
-    } catch (error) {
-      console.error('Login error:', error)
-      throw error
-    }
-  }
 
   const loginWithGoogle = async () => {
     try {
@@ -31,41 +23,42 @@ export const useAuth = () => {
     }
   }
 
-  const register = async (email: string, password: string) => {
+  const signOut = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      user.value = userCredential.user
-      return user.value
-    } catch (error) {
-      console.error('Register error:', error)
+      await firebaseSignOut(auth)
+      user.value = null
+      router.push('/login')
+    } catch (error: any) {
+      console.error('Çıkış yapma hatası:', error)
       throw error
     }
   }
 
-  const logout = async () => {
-    try {
-      await signOut(auth)
-      user.value = null
-    } catch (error) {
-      console.error('Logout error:', error)
-      throw error
-    }
+  const checkAuth = async () => {
+    return new Promise<User | null>((resolve) => {
+      const unsubscribe = auth.onAuthStateChanged((userData) => {
+        user.value = userData
+        loading.value = false
+        unsubscribe()
+        resolve(userData)
+      })
+    })
   }
 
   const getIdToken = async () => {
     if (user.value) {
       return await user.value.getIdToken()
     }
-    throw new Error('User is not authenticated')
+    throw new Error('Kullanıcı giriş yapmamış')
   }
 
   return {
     user,
     isAuthenticated,
-    login,
+    loading,
     loginWithGoogle,
-    register,
-    logout,
+    signOut,
+    checkAuth,
     getIdToken
   }
 }
