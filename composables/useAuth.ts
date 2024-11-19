@@ -14,11 +14,14 @@ export const useAuth = () => {
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider()
-      const userCredential = await signInWithPopup(auth, provider)
-      user.value = userCredential.user
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      })
+      const result = await signInWithPopup(auth, provider)
+      user.value = result.user
       return user.value
-    } catch (error) {
-      console.error('Google login error:', error)
+    } catch (error: any) {
+      console.error('Google login hatası:', error)
       throw error
     }
   }
@@ -27,6 +30,9 @@ export const useAuth = () => {
     try {
       await firebaseSignOut(auth)
       user.value = null
+      if (auth.currentUser) {
+        await auth.currentUser.reload()
+      }
       router.push('/login')
     } catch (error: any) {
       console.error('Çıkış yapma hatası:', error)
@@ -47,7 +53,7 @@ export const useAuth = () => {
 
   const getIdToken = async () => {
     if (user.value) {
-      return await user.value.getIdToken()
+      return await user.value.getIdToken(true)
     }
     throw new Error('Kullanıcı giriş yapmamış')
   }
