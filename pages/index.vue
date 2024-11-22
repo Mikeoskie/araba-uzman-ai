@@ -1,55 +1,75 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col">
-    <header class="bg-blue-600 shadow">
-      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-white" @click="refreshPage">Araba Uzmanı AI</h1>
-        <button v-if="isAuthenticated" @click="handleLogout" class="text-white hover:text-gray-200">Çıkış Yap</button>
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
+    <header class="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-white hover:text-blue-100 transition-colors duration-200" @click="refreshPage">
+          Araba Uzmanı AI
+        </h1>
+        <button 
+          v-if="isAuthenticated" 
+          @click="handleLogout" 
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-lg transition-colors duration-200 shadow-sm"
+        >
+          Çıkış Yap
+        </button>
       </div>
     </header>
 
-    <main v-if="isAuthenticated" class="flex-grow flex flex-col max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex-grow overflow-y-auto py-6" ref="chatContainer">
-        <div v-for="(message, index) in messages" :key="index" class="mb-4">
+    <main class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex-grow overflow-y-auto py-6 space-y-4" ref="chatContainer">
+        <div v-for="(message, index) in messages" :key="index" 
+          class="transition-all duration-200 ease-in-out"
+          :class="{'opacity-0 translate-y-4': isLoading && index === messages.length - 1}">
           <div :class="[
-            'max-w-xl rounded-lg p-4',
-            message.isUser ? 'bg-blue-100 ml-auto' : 'bg-white'
+            'rounded-2xl p-4 shadow-sm max-w-[80%] break-words',
+            message.isUser ? 
+              'bg-blue-600 text-white ml-auto' : 
+              'bg-white text-gray-800 mr-auto border border-gray-100'
           ]">
-            <p class="text-gray-800">{{ message.text }}</p>
+            <p class="leading-relaxed">{{ message.text }}</p>
           </div>
         </div>
-        <div v-if="isLoading" class="flex items-center space-x-2 mb-4">
-          <div class="w-3 h-3 bg-gray-500 rounded-full animate-bounce"></div>
-          <div class="w-3 h-3 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-          <div class="w-3 h-3 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+
+        <div v-if="isLoading" class="flex items-center space-x-2 p-4 bg-white rounded-2xl shadow-sm mr-auto max-w-[60%]">
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
         </div>
       </div>
 
-      <div class="py-4">
-        <form @submit.prevent="sendMessage" class="flex items-center">
-          <input
-            v-model="userInput"
-            type="text"
-            placeholder="Arabalar hakkında bir soru sorun..."
-            class="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="bg-blue-500 text-white px-6 py-2 rounded-r-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            {{ isLoading ? 'Gönderiliyor...' : 'Gönder' }}
-          </button>
-        </form>
+      <div class="fixed bottom-0 left-0 right-0 py-4 bg-white shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <form @submit.prevent="sendMessage" class="flex items-center gap-4">
+            <div class="relative flex-grow">
+              <input
+                v-model="userInput"
+                type="text"
+                placeholder="Arabalar hakkında bir soru sorun..."
+                class="w-full px-6 py-3 text-gray-700 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
+                :disabled="isLoading"
+              />
+            </div>
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[120px] justify-center shadow-md hover:shadow-lg"
+            >
+              <span v-if="isLoading">
+                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+              <span>{{ isLoading ? 'Gönderiliyor...' : 'Gönder' }}</span>
+            </button>
+          </form>
+        </div>
       </div>
     </main>
 
-    <main v-else class="flex-grow flex items-center justify-center">
-      <p class="text-xl">Lütfen giriş yapın veya kayıt olun.</p>
-    </main>
-
-    <footer class="bg-white shadow-md mt-8">
-      <div class="bg-blue-600 text-white py-4 mt-4 text-center">
-        <p>&copy; 2024 Araba Uzmanı AI. Tüm hakları saklıdır.</p>
+    <footer class="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg mt-auto">
+      <div class="py-4 text-center">
+        <p class="text-white text-sm">&copy; 2024 Araba Uzmanı AI. Tüm hakları saklıdır.</p>
       </div>
     </footer>
   </div>
@@ -69,14 +89,42 @@ const chatContainer = ref(null)
 const isLoading = ref(false)
 
 onMounted(async () => {
-  await checkAuth()
-})
-
-watch(isAuthenticated, (newValue) => {
-  if (!newValue) {
+  try {
+    await checkAuth()
+    if (!isAuthenticated.value) {
+      router.push('/login')
+    }
+    loadMessages()
+  } catch (error) {
+    console.error('Authentication hatası:', error)
     router.push('/login')
   }
 })
+
+const loadMessages = () => {
+  if (user.value?.uid) {
+    const savedMessages = localStorage.getItem(`messages_${user.value.uid}`)
+    if (savedMessages) {
+      messages.value = JSON.parse(savedMessages)
+      nextTick(() => {
+        scrollToBottom()
+      })
+    }
+  }
+}
+
+const saveMessages = () => {
+  if (user.value?.uid) {
+    localStorage.setItem(`messages_${user.value.uid}`, JSON.stringify(messages.value))
+  }
+}
+
+watch(messages, () => {
+  saveMessages()
+  nextTick(() => {
+    scrollToBottom()
+  })
+}, { deep: true })
 
 const handleLogout = async () => {
   try {
@@ -132,29 +180,69 @@ const scrollToBottom = () => {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight
   }
 }
-
-watch(messages, () => {
-  nextTick(() => {
-    scrollToBottom()
-  })
-})
 </script>
 
-<style>
-@keyframes bounce {
-  0%, 100% {
+<style scoped>
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.5);
+  border-radius: 2px;
+}
+
+.flex-grow.overflow-y-auto {
+  height: calc(100vh - 280px);
+  min-height: 400px;
+  margin-bottom: 100px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
-  50% {
-    transform: translateY(-5px);
+}
+
+.mb-4 {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.fixed.bottom-0 {
+  z-index: 20;
+  margin-bottom: 60px;
+}
+
+@media (max-width: 640px) {
+  .fixed.bottom-0 {
+    margin-bottom: 50px;
   }
-}
-
-.animate-bounce {
-  animation: bounce 0.6s infinite;
-}
-
-h1 {
-  cursor: pointer;
+  
+  .flex-grow.overflow-y-auto {
+    height: calc(100vh - 240px);
+    margin-bottom: 80px;
+  }
 }
 </style>

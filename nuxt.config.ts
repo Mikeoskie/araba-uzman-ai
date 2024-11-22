@@ -14,7 +14,8 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '~/plugins/firebase.ts'
+    '~/plugins/firebase.ts',
+    '~/plugins/auth-init.ts'
   ],
 
   runtimeConfig: {
