@@ -1,26 +1,24 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
-        </h2>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1 class="login-title">Hoş Geldiniz!</h1>
+        <p class="login-subtitle">Araba Uzmanı AI'ya giriş yapın</p>
       </div>
-      <div>
-        <button @click="handleGoogleLogin"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <svg class="h-5 w-5 text-gray-500 group-hover:text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
-            </svg>
-          </span>
-          Sign in with Google
+      
+      <div class="login-content">
+        <button @click="handleGoogleLogin" class="google-button">
+          <img 
+            src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
+            alt="Google"
+            class="google-icon"
+          />
+          Google ile Devam Et
         </button>
+        <p class="terms-text">
+          Giriş yaparak, hizmet şartlarımızı kabul etmiş olursunuz.
+        </p>
       </div>
-      <p v-if="error" class="mt-2 text-center text-sm text-red-600">
-        {{ error }}
-      </p>
     </div>
   </div>
 </template>
@@ -43,3 +41,123 @@ const handleGoogleLogin = async () => {
   }
 }
 </script>
+
+<style scoped>
+.login-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+  padding: 20px;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.login-title {
+  color: #2d3748;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+  color: #4a5568;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.google-button {
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 16px;
+  background: white;
+  color: #2d3748;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.google-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  background: #f8fafc;
+}
+
+.google-button:active {
+  transform: translateY(0);
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.terms-text {
+  color: #718096;
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.5;
+  padding: 0 10px;
+}
+
+/* Mobil cihazlar için responsive tasarım */
+@media (max-width: 640px) {
+  .login-card {
+    padding: 30px 24px;
+  }
+
+  .login-title {
+    font-size: 2rem;
+  }
+
+  .google-button {
+    padding: 12px 20px;
+  }
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card {
+  animation: fadeIn 0.6s ease-out;
+}
+</style>
