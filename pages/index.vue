@@ -16,24 +16,28 @@
     </header>
 
     <main class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex-grow overflow-y-auto py-6 space-y-4" ref="chatContainer">
-        <div v-for="(message, index) in messages" :key="index" 
-          class="transition-all duration-200 ease-in-out"
-          :class="{'opacity-0 translate-y-4': isLoading && index === messages.length - 1}">
-          <div :class="[
-            'rounded-2xl p-4 shadow-sm max-w-[80%] break-words',
-            message.isUser ? 
-              'bg-blue-600 text-white ml-auto' : 
-              'bg-white text-gray-800 mr-auto border border-gray-100'
-          ]">
-            <p class="leading-relaxed">{{ message.text }}</p>
+      <div class="flex-grow overflow-y-auto py-6" ref="chatContainer">
+        <div class="space-y-6">
+          <div v-for="(message, index) in messages" :key="index" 
+            class="transition-all duration-300 ease-in-out"
+            :class="{'opacity-0 translate-y-4': isLoading && index === messages.length - 1}">
+            <div :class="[
+              'rounded-2xl p-4 shadow-sm max-w-[80%] break-words',
+              message.isUser ? 
+                'bg-blue-600 text-white ml-auto' : 
+                'bg-white text-gray-800 mr-auto border border-gray-100'
+            ]">
+              <p class="leading-relaxed whitespace-pre-wrap">{{ message.text }}</p>
+            </div>
           </div>
         </div>
 
-        <div v-if="isLoading" class="flex items-center space-x-2 p-4 bg-white rounded-2xl shadow-sm mr-auto max-w-[60%]">
-          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        <div v-if="isLoading" class="mt-6">
+          <div class="flex items-center space-x-2 p-4 bg-white rounded-2xl shadow-sm mr-auto max-w-[60%]">
+            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+          </div>
         </div>
       </div>
 
@@ -45,14 +49,14 @@
                 v-model="userInput"
                 type="text"
                 placeholder="Arabalar hakkında bir soru sorun..."
-                class="w-full px-6 py-3 text-gray-700 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
+                class="w-full px-6 py-4 text-gray-700 bg-gray-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200 border border-gray-200"
                 :disabled="isLoading"
               />
             </div>
             <button
               type="submit"
               :disabled="isLoading"
-              class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[120px] justify-center shadow-md hover:shadow-lg"
+              class="px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 min-w-[140px] justify-center shadow-md hover:shadow-lg"
             >
               <span v-if="isLoading">
                 <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -204,7 +208,8 @@ const scrollToBottom = () => {
 .flex-grow.overflow-y-auto {
   height: calc(100vh - 280px);
   min-height: 400px;
-  margin-bottom: 100px;
+  margin-bottom: 120px;
+  padding-bottom: 20px;
 }
 
 @keyframes slideIn {
@@ -242,7 +247,13 @@ footer {
   
   .flex-grow.overflow-y-auto {
     height: calc(100vh - 240px);
-    margin-bottom: 80px;
+    margin-bottom: 100px;
   }
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 </style>
