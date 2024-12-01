@@ -46,5 +46,7 @@ export default defineNuxtConfig({
     plugins: ['~/server/plugins/auth.ts']
   },
 
+  ssr: false,
+
   compatibilityDate: '2024-09-23',
 })
