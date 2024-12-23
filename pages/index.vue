@@ -15,7 +15,7 @@
       </div>
     </header>
 
-    <main class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow flex flex-col max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 mb-16">
       <div class="flex-grow overflow-y-auto py-6" ref="chatContainer">
         <div class="space-y-6">
           <div v-for="(message, index) in messages" :key="index" 
