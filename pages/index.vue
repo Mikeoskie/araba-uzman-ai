@@ -97,6 +97,7 @@ onMounted(async () => {
     await checkAuth()
     if (!isAuthenticated.value) {
       router.push('/login')
+      return
     }
     loadMessages()
   } catch (error) {
