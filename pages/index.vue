@@ -110,6 +110,11 @@ const loadMessages = () => {
   if (user.value?.uid) {
     const savedMessages = localStorage.getItem(`messages_${user.value.uid}`)
     if (savedMessages) {
+      // try {
+      //   messages.value = JSON.parse(savedMessages)
+      // } catch(error) {
+      //   console.error('json hatası',error)
+      // }
       messages.value = JSON.parse(savedMessages)
       nextTick(() => {
         scrollToBottom()
